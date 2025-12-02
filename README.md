@@ -1,4 +1,20 @@
-# OTCBook – OTC Crypto Desk Bookkeeping API (Django)
+# OTCBook – OTC Crypto Desk Bookkeeping API (Django) 
+
+
+# **DISCLAIMER (READ FIRST)**
+
+This project is provided **solely for educational and demonstration purposes**.
+
+It is **not a production trading system**, **not financial software**, and **not a substitute for licensed financial tools**.
+The following applies:
+
+* **No real trading, financial calculations, or investment advice** should be executed with this system.
+* **No warranties or guarantees** are provided regarding accuracy, compliance, or security.
+* **DO NOT** use this software to collect real user data, real identity documents, or real financial information.
+* **Not intended for production**, real clients, or regulated environments.
+
+By using this repository, you acknowledge that the author(s) are **not responsible** for any misuse or consequences arising from real-world usage
+
 
 This repository contains the backend system for **OTCBook**, a bookkeeping and financial advisory platform for Nigerian OTC crypto trading desks. The project provides tools for desk owners and traders to record trades, calculate P&L, manage teams, earn points, generate invoices, and receive advisory reports.
 The backend is built with **Django** and **Django REST Framework**. No frontend is required for the core capstone submission. 
