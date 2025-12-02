@@ -1,0 +1,93 @@
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+env/
+
+# Local environment variables
+.env
+*.env
+
+# ============================================
+# DJANGO
+# ============================================
+# SQLite (if used locally)
+db.sqlite3
+db.sqlite3-journal
+
+# Django Logs
+logs/
+*.log
+
+# Static & Media 
+staticfiles/
+media/
+media/*
+
+# Ignore KYC uploads 
+media/kyc/
+kyc/
+*/kyc/
+
+# ============================================
+# PACKAGES
+# ============================================
+# Python dependencies
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================
+# OS FILES
+# ============================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# ============================================
+# IDE / EDITORS
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# JetBrains
+*.iml
+
+# ============================================
+# TESTING
+# ============================================
+.coverage
+htmlcov/
+*.cover
+*.py,cover
+.cache
+nosetests.xml
+coverage.xml
+
+# ============================================
+# DOCKER
+# ============================================
+docker-compose.override.yml
+
+# ============================================
+# MISC
+# ============================================
+*.bak
+*.tmp
