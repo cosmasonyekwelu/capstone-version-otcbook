@@ -1,6 +1,5 @@
 # OTCBook – OTC Crypto Desk Bookkeeping API (Django)
 
-# **DISCLAIMER (READ FIRST)**
 
 This project is provided **solely for educational and demonstration purposes**.
 
