@@ -32,7 +32,6 @@ AUTH_USER_MODEL = "users.User"
 
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -40,17 +39,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
     # Local apps
-    "users", "trades",
-
+    "users",
+    "trades",
+    
     # Third-party apps
     "rest_framework",
     "rest_framework_simplejwt",
+    "django_filters",
 ]
 
-# -----------------------------------------------------
-# DRF Settings
-# -----------------------------------------------------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -58,8 +57,10 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+    "DEFAULT_FILTER_BACKENDS": (
+        "django_filters.rest_framework.DjangoFilterBackend",  # Add this
+    ),
 }
-
 
 # -----------------------------------------------------
 # JWT Settings
