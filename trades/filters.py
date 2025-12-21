@@ -1,21 +1,22 @@
 from django_filters import rest_framework as filters
 from django.utils import timezone
 from datetime import timedelta
-from .models import Trade, Asset, Desk
+
+from .models import Trade
+
 
 class TradeFilter(filters.FilterSet):
-    asset = filters.ModelChoiceFilter(
-        queryset=Asset.objects.filter(is_active=True),
-        field_name="asset"
-    )
-
-    desk = filters.ModelChoiceFilter(
-        queryset=Desk.objects.all(),
-        field_name="desk"
+    asset = filters.CharFilter(
+        field_name="asset__symbol",
+        lookup_expr="iexact"
     )
 
     side = filters.ChoiceFilter(
         choices=Trade.SIDE_CHOICES
+    )
+
+    trade_type = filters.ChoiceFilter(
+        choices=Trade.TRADE_TYPE_CHOICES
     )
 
     start_date = filters.DateFilter(
@@ -31,10 +32,9 @@ class TradeFilter(filters.FilterSet):
     date_preset = filters.ChoiceFilter(
         choices=[
             ("today", "Today"),
-            ("yesterday", "Yesterday"),
-            ("week", "This week"),
-            ("month", "This month"),
-            ("year", "This year"),
+            ("week", "This Week"),
+            ("month", "This Month"),
+            ("year", "This Year"),
         ],
         method="filter_date_preset"
     )
@@ -46,16 +46,6 @@ class TradeFilter(filters.FilterSet):
 
     max_amount_ngn = filters.NumberFilter(
         field_name="amount_ngn",
-        lookup_expr="lte"
-    )
-
-    min_rate = filters.NumberFilter(
-        field_name="rate",
-        lookup_expr="gte"
-    )
-
-    max_rate = filters.NumberFilter(
-        field_name="rate",
         lookup_expr="lte"
     )
 
@@ -77,15 +67,13 @@ class TradeFilter(filters.FilterSet):
         model = Trade
         fields = [
             "asset",
-            "desk",
             "side",
+            "trade_type",
             "start_date",
             "end_date",
             "date_preset",
             "min_amount_ngn",
             "max_amount_ngn",
-            "min_rate",
-            "max_rate",
             "min_profit",
             "max_profit",
             "is_profitable",
@@ -104,19 +92,16 @@ class TradeFilter(filters.FilterSet):
         if value == "today":
             return queryset.filter(trade_date__date=today)
 
-        if value == "yesterday":
-            return queryset.filter(trade_date__date=today - timedelta(days=1))
-
         if value == "week":
-            week_start = today - timedelta(days=today.weekday())
-            return queryset.filter(trade_date__date__gte=week_start)
+            start = today - timedelta(days=today.weekday())
+            return queryset.filter(trade_date__date__gte=start)
 
         if value == "month":
-            month_start = today.replace(day=1)
-            return queryset.filter(trade_date__date__gte=month_start)
+            start = today.replace(day=1)
+            return queryset.filter(trade_date__date__gte=start)
 
         if value == "year":
-            year_start = today.replace(month=1, day=1)
-            return queryset.filter(trade_date__date__gte=year_start)
+            start = today.replace(month=1, day=1)
+            return queryset.filter(trade_date__date__gte=start)
 
         return queryset

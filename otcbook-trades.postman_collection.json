@@ -1,0 +1,154 @@
+{
+  "info": {
+    "name": "OTCBOOK API – Auth + Trades",
+    "_postman_id": "otcbook-api-collection-v2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Desk Owner\",\n  \"email\": \"owner@example.com\",\n  \"password\": \"12345678\",\n  \"workspace\": \"AcmeDesk\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4001/auth/signup/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4001",
+              "path": ["auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner@example.com\",\n  \"password\": \"12345678\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4001/auth/login/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4001",
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer"
+            },
+            "url": {
+              "raw": "http://localhost:4001/auth/users/me/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4001",
+              "path": ["auth", "users", "me"]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Trades",
+      "item": [
+        {
+          "name": "Create Trade",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset\": 1,\n  \"desk\": 1,\n  \"side\": \"buy\",\n  \"amount_crypto\": \"0.05\",\n  \"amount_ngn\": \"3500000\",\n  \"rate\": \"70000000\",\n  \"trade_date\": \"2024-01-15T10:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4001/trades/create/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4001",
+              "path": ["trades", "create"]
+            }
+          }
+        },
+        {
+          "name": "List Trades",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer"
+            },
+            "url": {
+              "raw": "http://localhost:4001/trades/list/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4001",
+              "path": ["trades", "list"]
+            }
+          }
+        },
+        {
+          "name": "Get Trade by ID",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer"
+            },
+            "url": {
+              "raw": "http://localhost:4001/trades/1/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4001",
+              "path": ["trades", "1"]
+            }
+          }
+        },
+        {
+          "name": "P&L Summary",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer"
+            },
+            "url": {
+              "raw": "http://localhost:4001/trades/pnl/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4001",
+              "path": ["trades", "pnl"]
+            }
+          }
+        },
+        {
+          "name": "Export Trades CSV",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer"
+            },
+            "url": {
+              "raw": "http://localhost:4001/trades/export/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4001",
+              "path": ["trades", "export"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

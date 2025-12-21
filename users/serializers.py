@@ -6,9 +6,7 @@ from .models import Desk
 User = get_user_model()
 
 
-# =====================================================
-# SIGNUP SERIALIZER (Desk Owner Registration)
-# =====================================================
+
 class SignupSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     email = serializers.EmailField()
@@ -68,9 +66,7 @@ class SignupSerializer(serializers.Serializer):
         }
 
 
-# =====================================================
-# KYC SERIALIZER
-# =====================================================
+
 class KYCSerializer(serializers.Serializer):
     id_card = serializers.ImageField()
     address = serializers.CharField(max_length=255)
@@ -83,9 +79,7 @@ class KYCSerializer(serializers.Serializer):
         return desk
 
 
-# =====================================================
-# ADD USER TO DESK (Desk Owner → Add Trader/Staff)
-# =====================================================
+
 class AddUserSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=255)
     email = serializers.EmailField()

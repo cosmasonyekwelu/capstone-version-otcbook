@@ -3,9 +3,7 @@ from django.db import models
 from .managers import Manager
 
 
-# -----------------------------------------------------
-# DESK MODEL (Workspace / Company)
-# -----------------------------------------------------
+
 class Desk(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
@@ -29,9 +27,6 @@ class Desk(models.Model):
         return self.name
 
 
-# -----------------------------------------------------
-# USER MODEL for OTCBook
-# -----------------------------------------------------
 class User(AbstractUser):
     ROLE_CHOICES = (
         ("desk_owner", "Desk Owner"),

@@ -1,14 +1,18 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, filters as drf_filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum, Count, Q
 from django.http import HttpResponse
 from decimal import Decimal
 import csv
+
 from .models import Trade
-from .serializers import TradeSerializer, TradeListSerializer, PnLSummarySerializer
+from .serializers import (
+    TradeSerializer,
+    TradeListSerializer,
+    PnLSummarySerializer,
+)
 from .filters import TradeFilter
 
 
@@ -16,17 +20,35 @@ class TradeCreateView(generics.CreateAPIView):
     serializer_class = TradeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
+
 
 class TradeListView(generics.ListAPIView):
     serializer_class = TradeListSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+    ]
     filterset_class = TradeFilter
-    ordering_fields = ["trade_date", "amount_ngn", "profit_loss", "rate"]
+    ordering_fields = [
+        "trade_date",
+        "amount_ngn",
+        "profit_loss",
+        "rate",
+    ]
     ordering = ["-trade_date"]
 
     def get_queryset(self):
-        return Trade.objects.filter(trader=self.request.user).select_related("asset", "desk")
+        return (
+            Trade.objects
+            .filter(trader=self.request.user)
+            .select_related("asset", "desk")
+        )
 
 
 class TradeDetailView(generics.RetrieveAPIView):
@@ -34,7 +56,11 @@ class TradeDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Trade.objects.filter(trader=self.request.user).select_related("asset", "desk")
+        return (
+            Trade.objects
+            .filter(trader=self.request.user)
+            .select_related("asset", "desk")
+        )
 
 
 class TradePnLView(APIView):
@@ -51,22 +77,35 @@ class TradePnLView(APIView):
         )
 
         for key in aggregates:
-            aggregates[key] = aggregates[key] or Decimal("0.00")
+            if aggregates[key] is None:
+                aggregates[key] = Decimal("0.00")
 
-        by_asset = trades.values("asset__symbol").annotate(
-            trades=Count("id"),
-            profit_loss=Sum("profit_loss"),
-        ).order_by("-profit_loss")
+        by_asset = (
+            trades.values("asset__symbol")
+            .annotate(
+                trades=Count("id"),
+                profit_loss=Sum("profit_loss"),
+            )
+            .order_by("-profit_loss")
+        )
 
-        by_desk = trades.values("desk__name").annotate(
-            trades=Count("id"),
-            profit_loss=Sum("profit_loss"),
-        ).order_by("-profit_loss")
+        by_desk = (
+            trades.values("desk__name")
+            .annotate(
+                trades=Count("id"),
+                profit_loss=Sum("profit_loss"),
+            )
+            .order_by("-profit_loss")
+        )
 
-        by_date = trades.values("trade_date__date").annotate(
-            trades=Count("id"),
-            profit_loss=Sum("profit_loss"),
-        ).order_by("trade_date__date")
+        by_date = (
+            trades.values("trade_date__date")
+            .annotate(
+                trades=Count("id"),
+                profit_loss=Sum("profit_loss"),
+            )
+            .order_by("trade_date__date")
+        )
 
         payload = {
             "total_trades": aggregates["total_trades"],
@@ -78,16 +117,19 @@ class TradePnLView(APIView):
             "by_date": list(by_date),
         }
 
-        serializer = PnLSummarySerializer(payload)
-        return Response(serializer.data)
+        return Response(PnLSummarySerializer(payload).data)
 
 
 class TradeExportCSVView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        queryset = Trade.objects.filter(trader=request.user).select_related("asset", "desk")
-        queryset = TradeFilter(request.GET, queryset=queryset).qs
+        trades = (
+            Trade.objects
+            .filter(trader=request.user)
+            .select_related("asset", "desk")
+            .order_by("-trade_date")
+        )
 
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="trades.csv"'
@@ -99,19 +141,21 @@ class TradeExportCSVView(APIView):
             "Asset",
             "Desk",
             "Side",
+            "Trade Type",
             "Crypto Amount",
             "NGN Amount",
             "Rate",
             "Profit/Loss",
         ])
 
-        for trade in queryset:
+        for trade in trades:
             writer.writerow([
                 trade.id,
                 trade.trade_date,
                 trade.asset.symbol,
                 trade.desk.name,
                 trade.side.upper(),
+                trade.trade_type,
                 trade.amount_crypto,
                 trade.amount_ngn,
                 trade.rate,
