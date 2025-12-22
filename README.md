@@ -9,13 +9,12 @@ The following applies:
 - **No real trading, financial calculations, or investment advice** should be executed with this system.
 - **No warranties or guarantees** are provided regarding accuracy, compliance, or security.
 - **DO NOT** use this software to collect real user data, real identity documents, or real financial information.
-- **Not intended for production**, real clients, or regulated environments.
+
 
 By using this repository, you acknowledge that the author(s) are **not responsible** for any misuse or consequences arising from real-world usage
 
 This repository contains the backend system for **OTCBook**, a bookkeeping and financial advisory platform for Nigerian OTC crypto trading desks. The project provides tools for desk owners and traders to record trades, calculate P&L, manage teams, earn points, generate invoices, and receive advisory reports.
-The backend is built with **Django** and **Django REST Framework**. No frontend is required for the core capstone submission.
-
+The backend is built with **Django** and **Django REST Framework**. 
 ---
 
 ## 1. Project Overview
@@ -175,7 +174,7 @@ Endpoints:
 | File Storage      | Local or S3               |
 | Background Jobs   | Celery + Redis (optional) |
 | PDF Engine        | ReportLab or WeasyPrint   |
-| AI                | OpenAI API or rule-based  |
+| AI                | GROK API                  |
 | Documentation     | Swagger / Redoc           |
 |                   |                           |
 
@@ -219,7 +218,7 @@ py manage.py createsuperuser
 ### 4.6 Start Server
 
 ```bash
-py manage.py runserver
+py manage.py runserver 4001
 ```
 
 Your API will be available at:
@@ -303,8 +302,6 @@ Response includes:
 
 ### Admin
 
-| GET /admin/overview/ |
-| GET /admin/users/ |
-| GET /admin/trades/ |
+Using Django Admin
 
 ---

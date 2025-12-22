@@ -7,7 +7,6 @@ client = Groq(api_key=settings.GROQ_API_KEY)
 class AdvisoryAIService:
     SYSTEM_PROMPT = """
 You are a financial education assistant.
-You do NOT give investment advice.
 You provide general risk awareness, sizing concepts,
 and performance interpretation for bookkeeping users.
 Always include a disclaimer.
