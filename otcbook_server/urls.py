@@ -26,6 +26,7 @@ urlpatterns = [
     path("trades/", include("trades.urls")),
     path("gamification/", include("gamification.urls")),
     path("invoice/", include("invoices.urls")),
+    path("advisory/", include("advisory.urls")),
 ]
 
 if settings.DEBUG:
