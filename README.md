@@ -15,6 +15,7 @@ By using this repository, you acknowledge that the author(s) are **not responsib
 
 This repository contains the backend system for **OTCBook**, a bookkeeping and financial advisory platform for Nigerian OTC crypto trading desks. The project provides tools for desk owners and traders to record trades, calculate P&L, manage teams, earn points, generate invoices, and receive advisory reports.
 The backend is built with **Django** and **Django REST Framework**. 
+
 ---
 
 ## 1. Project Overview
@@ -173,7 +174,7 @@ Endpoints:
 | Authentication    | JWT (SimpleJWT)           |
 | File Storage      | Local or S3               |
 | Background Jobs   | Celery + Redis (optional) |
-| PDF Engine        | ReportLab or WeasyPrint   |
+| PDF Engine        | ReportLab                 |
 | AI                | GROK API                  |
 | Documentation     | Swagger / Redoc           |
 |                   |                           |

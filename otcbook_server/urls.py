@@ -29,8 +29,15 @@ urlpatterns = [
     path("advisory/", include("advisory.urls")),
 ]
 
+# Always add media URL pattern
+urlpatterns += static(
+    settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT
+)
+
+# Optionally add static files pattern only in DEBUG mode
 if settings.DEBUG:
     urlpatterns += static(
-        settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT
+        settings.STATIC_URL,
+        document_root=settings.STATIC_ROOT
     )
