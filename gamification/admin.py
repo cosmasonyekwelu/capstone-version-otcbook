@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import OPHistory, Badge, UserBadge, Notification
 
 
+
 @admin.register(OPHistory)
 class OPHistoryAdmin(admin.ModelAdmin):
     list_display = (
@@ -26,6 +27,7 @@ class OPHistoryAdmin(admin.ModelAdmin):
         "created_at",
     )
     ordering = ("-created_at",)
+    list_per_page = 50
 
     def has_add_permission(self, request):
         return False
@@ -35,6 +37,7 @@ class OPHistoryAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
 
 
 @admin.register(Badge)
@@ -49,6 +52,8 @@ class BadgeAdmin(admin.ModelAdmin):
         "name",
     )
     ordering = ("code",)
+    list_per_page = 50
+
 
 
 @admin.register(UserBadge)
@@ -72,6 +77,8 @@ class UserBadgeAdmin(admin.ModelAdmin):
         "badge",
         "unlocked_at",
     )
+    ordering = ("-unlocked_at",)
+    list_per_page = 50
 
     def has_add_permission(self, request):
         return False
@@ -81,6 +88,7 @@ class UserBadgeAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
 
 
 @admin.register(Notification)
@@ -110,6 +118,7 @@ class NotificationAdmin(admin.ModelAdmin):
         "created_at",
     )
     ordering = ("-created_at",)
+    list_per_page = 50
 
     actions = ["mark_selected_as_read"]
 
@@ -117,7 +126,8 @@ class NotificationAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
-        return True  # allow marking as read only
+        # Allow marking as read only
+        return True
 
     def has_delete_permission(self, request, obj=None):
         return False
