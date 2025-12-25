@@ -1,14 +1,13 @@
 from django.utils import timezone
-from django.conf import settings
-from django.core.files.base import ContentFile
-from decimal import Decimal
 from io import BytesIO
+
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 from reportlab.lib.styles import getSampleStyleSheet
 
 from .models import Invoice
 from trades.models import Trade
+from common.storage.cloudinary import upload_private_file
 
 
 def generate_invoice_number():
@@ -19,7 +18,10 @@ def generate_invoice_number():
 
 class InvoiceService:
     @staticmethod
-    def create_invoice_from_trade(trade: Trade, client_email: str = "") -> Invoice:
+    def create_invoice_from_trade(
+        trade: Trade,
+        client_email: str = "",
+    ) -> Invoice:
         if hasattr(trade, "invoice"):
             raise ValueError("Invoice already exists for this trade.")
 
@@ -64,17 +66,19 @@ class InvoiceService:
         if invoice.client_email:
             elements.append(
                 Paragraph(
-                    f"Billed To: {invoice.client_email}", styles["Normal"])
+                    f"Billed To: {invoice.client_email}",
+                    styles["Normal"],
+                )
             )
 
         doc.build(elements)
+
         pdf_bytes = buffer.getvalue()
         buffer.close()
 
-        filename = f"invoices/{invoice.invoice_number}.pdf"
-        path = f"{settings.MEDIA_ROOT}/{filename}"
+        cloudinary_url = upload_private_file(
+            file_obj=BytesIO(pdf_bytes),
+            public_id=f"invoices/{invoice.invoice_number}",
+        )
 
-        with open(path, "wb") as f:
-            f.write(pdf_bytes)
-
-        return f"{settings.MEDIA_URL}{filename}"
+        return cloudinary_url

@@ -40,6 +40,9 @@ class OPWeightedScore(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
+# =====================================================
+# NEW – REQUIRED FOR RISK REPORT EXPORT
+# =====================================================
 class RiskReport(models.Model):
     STATUS_CHOICES = [
         ("pending", "Pending"),
@@ -48,7 +51,11 @@ class RiskReport(models.Model):
         ("failed", "Failed"),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="risk_reports",
+    )
 
     risk_score = models.ForeignKey(
         RiskScore,
@@ -58,18 +65,21 @@ class RiskReport(models.Model):
         related_name="reports",
     )
 
-    ai_summary = models.TextField(help_text="AI-generated text used in the report")
+    ai_summary = models.TextField(
+        help_text="AI-generated summary used in the report"
+    )
 
     pdf_file_url = models.URLField(
-        help_text="Private Cloudinary/S3 URL",
         null=True,
         blank=True,
+        help_text="Private Cloudinary/S3 URL (future use)",
     )
 
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default="pending",
+        db_index=True,
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

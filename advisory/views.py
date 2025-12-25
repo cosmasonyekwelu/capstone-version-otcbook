@@ -5,32 +5,29 @@ from django.conf import settings
 from django.db import models
 
 from .services import AdvisoryAIService
-from .models import TradeInsight
+from .models import TradeInsight, RiskScore, RiskReport
 from gamification.models import OPHistory
 
 from django.http import HttpResponse
+from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
-from .models import RiskReport
 
 
+# =====================================================
+# EXISTING – DO NOT TOUCH
+# =====================================================
 class AdvisoryChatView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         if not settings.AI_ADVISORY_ENABLED:
-            return Response(
-                {"error": "AI advisory disabled"},
-                status=403,
-            )
+            return Response({"error": "AI advisory disabled"}, status=403)
 
         question = request.data.get("question")
         if not question:
-            return Response(
-                {"error": "Question required"},
-                status=400,
-            )
+            return Response({"error": "Question required"}, status=400)
 
         answer = AdvisoryAIService.ask(question)
 
@@ -68,6 +65,10 @@ class QuickInsightsView(APIView):
         })
 
 
+# =====================================================
+# NEW – OP ANALYSIS (ADDED)
+# POST /advisory/op-analysis/
+# =====================================================
 class OPAnalysisView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -96,11 +97,14 @@ class OPAnalysisView(APIView):
         })
 
 
+# =====================================================
+# NEW – RISK REPORT PDF (ADDED)
+# POST /advisory/risk-report/
+# =====================================================
 class RiskReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # 1. Aggregate OP points
         total_op = (
             OPHistory.objects
             .filter(user=request.user)
@@ -115,7 +119,6 @@ class RiskReportPDFView(APIView):
         else:
             risk_level = "LOW RISK"
 
-        # 2. Build AI question (TEXT ONLY)
         ai_prompt = (
             f"Generate a concise risk awareness summary for a trader with:\n"
             f"- OP score: {total_op}\n"
@@ -123,43 +126,39 @@ class RiskReportPDFView(APIView):
             f"Focus on education, position sizing, and risk discipline."
         )
 
-        # 3. Call AI
         ai_summary = AdvisoryAIService.ask(ai_prompt)
 
-        # 4. Persist report (PDF URL added later when storage is wired)
+        # Persist report record
         report = RiskReport.objects.create(
             user=request.user,
             ai_summary=ai_summary,
             status="generating",
         )
 
-        # 5. Generate PDF using AI text
-        response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = 'attachment; filename="risk_report.pdf"'
-
-        doc = SimpleDocTemplate(response, pagesize=A4)
+        # Generate PDF (in-memory)
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
         styles = getSampleStyleSheet()
         elements = []
 
         elements.append(Paragraph("AI Risk Advisory Report", styles["Title"]))
         elements.append(Spacer(1, 20))
-
-        elements.append(
-            Paragraph(f"User: {request.user.email}", styles["Normal"]))
+        elements.append(Paragraph(f"User: {request.user.email}", styles["Normal"]))
         elements.append(Paragraph(f"OP Score: {total_op}", styles["Normal"]))
-        elements.append(
-            Paragraph(f"Risk Level: {risk_level}", styles["Normal"]))
+        elements.append(Paragraph(f"Risk Level: {risk_level}", styles["Normal"]))
         elements.append(Spacer(1, 20))
-
         elements.append(Paragraph("AI Summary", styles["Heading2"]))
         elements.append(Spacer(1, 10))
         elements.append(Paragraph(ai_summary, styles["Normal"]))
-        elements.append(Spacer(1, 20))
 
         doc.build(elements)
+        pdf_bytes = buffer.getvalue()
+        buffer.close()
 
-        # 6. Update lifecycle state
         report.status = "ready"
         report.save(update_fields=["status"])
+
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="risk_report.pdf"'
 
         return response

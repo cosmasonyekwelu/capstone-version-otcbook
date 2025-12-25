@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 
+import cloudinary
 from pathlib import Path
 from datetime import timedelta
 import os
@@ -18,7 +19,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import cloudinary
 
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
@@ -155,7 +155,7 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
-    "OTCBook <no-reply@otcbook.com>",
+    "OTCBook <otcbookng@gmail.com>",
 )
 
 if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:

@@ -11,6 +11,8 @@ class Desk(models.Model):
         blank=True,
         help_text="Private Cloudinary URL for uploaded ID document",
     )
+    
+    address = models.CharField(max_length=255, blank=True) 
 
     kyc_status = models.CharField(
         max_length=20,
