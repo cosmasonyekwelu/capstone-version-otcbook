@@ -1,0 +1,282 @@
+{
+  "info": {
+    "name": "OTCBOOK API – Full Backend",
+    "_postman_id": "otcbook-api-collection-v3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Desk Owner\",\n  \"email\": \"owner2@otcbook.com\",\n  \"password\": \"1234567890\",\n  \"workspace\": \"AlphaDesk\"\n}"
+            },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/auth/signup/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner2@otcbook.com\",\n  \"password\": \"1234567890\"\n}"
+            },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/auth/login/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/auth/users/me/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["auth", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Upload KYC",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer" },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "id_card", "type": "file" }
+              ]
+            },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/auth/kyc/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["auth", "kyc"]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Trades",
+      "item": [
+        {
+          "name": "Create Trade",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset\": 1,\n  \"side\": \"buy\",\n  \"amount_crypto\": \"0.05\",\n  \"amount_ngn\": \"3500000\",\n  \"rate\": \"70000000\",\n  \"trade_date\": \"2025-01-15T10:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/trades/create/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["trades", "create"]
+            }
+          }
+        },
+        {
+          "name": "List Trades",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/trades/list/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["trades", "list"]
+            }
+          }
+        },
+        {
+          "name": "Trade Detail",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/trades/1/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["trades", "1"]
+            }
+          }
+        },
+        {
+          "name": "Trade PnL",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/trades/pnl/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["trades", "pnl"]
+            }
+          }
+        },
+        {
+          "name": "Export Trades CSV",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/trades/export/csv/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["trades", "export", "csv"]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Invoices",
+      "item": [
+        {
+          "name": "Create Invoice",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_email\": \"client1@example.com\"\n}"
+            },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/invoice/create/1/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["invoice", "create", "1"]
+            }
+          }
+        },
+        {
+          "name": "List Invoices",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/invoice/list/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["invoice", "list"]
+            }
+          }
+        },
+        {
+          "name": "Download Invoice PDF",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/invoice/1/download/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["invoice", "1", "download"]
+            }
+          }
+        },
+        {
+          "name": "Send Invoice Email",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/invoice/1/send/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["invoice", "1", "send"]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Advisory",
+      "item": [
+        {
+          "name": "AI Chat",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"How should I size a BTC trade?\"\n}"
+            },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/advisory/chat/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["advisory", "chat"]
+            }
+          }
+        },
+        {
+          "name": "Quick Insights",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/advisory/quick-insights/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["advisory", "quick-insights"]
+            }
+          }
+        },
+        {
+          "name": "OP Analysis",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/advisory/op-analysis/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["advisory", "op-analysis"]
+            }
+          }
+        },
+        {
+          "name": "Risk Report PDF",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer" },
+            "url": {
+              "raw": "https://capstone-version-otcbook.onrender.com/advisory/risk-report/",
+              "protocol": "https",
+              "host": ["capstone-version-otcbook", "onrender", "com"],
+              "path": ["advisory", "risk-report"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

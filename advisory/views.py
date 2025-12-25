@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.db import models
 
+from drf_spectacular.utils import extend_schema, OpenApiExample
+
 from .services import AdvisoryAIService
 from .models import TradeInsight, RiskScore, RiskReport
 from gamification.models import OPHistory
@@ -15,12 +17,28 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
 
-# =====================================================
-# EXISTING – DO NOT TOUCH
-# =====================================================
 class AdvisoryChatView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="AI Advisory Chat",
+        description="Ask an AI-powered trading advisory question. Response is educational and risk-focused.",
+        request=dict,
+        responses={
+            200: {"answer": "string"},
+            400: {"error": "Question required"},
+            403: {"error": "AI advisory disabled"},
+        },
+        examples=[
+            OpenApiExample(
+                "Ask Advisory Question",
+                value={
+                    "question": "How should I size my BTC/NGN trade during high volatility?"
+                },
+            )
+        ],
+        tags=["Advisory"],
+    )
     def post(self, request):
         if not settings.AI_ADVISORY_ENABLED:
             return Response({"error": "AI advisory disabled"}, status=403)
@@ -43,6 +61,28 @@ class AdvisoryChatView(APIView):
 class QuickInsightsView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="Quick Risk Insights",
+        description="Returns OP trend, inferred risk alert level, and a volatility warning.",
+        responses={
+            200: {
+                "op_trend": "integer",
+                "risk_alert": "string",
+                "volatility_warning": "string",
+            }
+        },
+        examples=[
+            OpenApiExample(
+                "Quick Insights Example",
+                value={
+                    "op_trend": 320,
+                    "risk_alert": "medium",
+                    "volatility_warning": "High volatility assets require smaller sizing",
+                },
+            )
+        ],
+        tags=["Advisory"],
+    )
     def get(self, request):
         op_points = (
             OPHistory.objects
@@ -65,13 +105,31 @@ class QuickInsightsView(APIView):
         })
 
 
-# =====================================================
-# NEW – OP ANALYSIS (ADDED)
-# POST /advisory/op-analysis/
-# =====================================================
 class OPAnalysisView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="OP Trust Analysis",
+        description="Analyzes OP score and returns trust level and advisory weight.",
+        responses={
+            200: {
+                "op_score": "integer",
+                "trust_level": "string",
+                "advisory_weight": "number",
+            }
+        },
+        examples=[
+            OpenApiExample(
+                "OP Analysis Example",
+                value={
+                    "op_score": 480,
+                    "trust_level": "medium",
+                    "advisory_weight": 0.7,
+                },
+            )
+        ],
+        tags=["Advisory"],
+    )
     def post(self, request):
         total_op = (
             OPHistory.objects
@@ -97,13 +155,15 @@ class OPAnalysisView(APIView):
         })
 
 
-# =====================================================
-# NEW – RISK REPORT PDF (ADDED)
-# POST /advisory/risk-report/
-# =====================================================
 class RiskReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="Generate Risk Report PDF",
+        description="Generates an AI-powered risk advisory report and returns it as a PDF.",
+        responses={200: {"content": {"application/pdf": {}}}},
+        tags=["Advisory"],
+    )
     def post(self, request):
         total_op = (
             OPHistory.objects
@@ -128,14 +188,12 @@ class RiskReportPDFView(APIView):
 
         ai_summary = AdvisoryAIService.ask(ai_prompt)
 
-        # Persist report record
         report = RiskReport.objects.create(
             user=request.user,
             ai_summary=ai_summary,
             status="generating",
         )
 
-        # Generate PDF (in-memory)
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4)
         styles = getSampleStyleSheet()

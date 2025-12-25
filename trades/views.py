@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from decimal import Decimal
 import csv
 
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
+
 from .models import Trade
 from .serializers import (
     TradeSerializer,
@@ -16,14 +18,41 @@ from .serializers import (
 from .filters import TradeFilter
 
 
+
 class TradeCreateView(generics.CreateAPIView):
     serializer_class = TradeSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        summary="Create Trade",
+        description="Create a new trade for the authenticated user.",
+        request=TradeSerializer,
+        responses={201: TradeSerializer, 400: dict},
+        examples=[
+            OpenApiExample(
+                "Create Trade",
+                value={
+                    "asset": 1,
+                    "desk": 1,
+                    "side": "buy",
+                    "trade_type": "spot",
+                    "amount_crypto": "0.05",
+                    "amount_ngn": "3500000",
+                    "rate": "70000000",
+                    "trade_date": "2025-01-15T10:30:00Z"
+                }
+            )
+        ],
+        tags=["Trades"],
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["request"] = self.request
         return context
+
 
 
 class TradeListView(generics.ListAPIView):
@@ -43,18 +72,43 @@ class TradeListView(generics.ListAPIView):
     ]
     ordering = ["-trade_date"]
 
+    @extend_schema(
+        summary="List Trades",
+        description="Retrieve all trades belonging to the authenticated user.",
+        parameters=[
+            OpenApiParameter(name="side", description="Filter by buy or sell"),
+            OpenApiParameter(name="asset", description="Filter by asset ID"),
+            OpenApiParameter(name="desk", description="Filter by desk ID"),
+            OpenApiParameter(name="ordering", description="Order results"),
+        ],
+        responses={200: TradeListSerializer(many=True)},
+        tags=["Trades"],
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         return (
             Trade.objects
             .filter(trader=self.request.user)
             .select_related("asset", "desk")
         )
+
 
 
 class TradeDetailView(generics.RetrieveAPIView):
     serializer_class = TradeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary="Get Trade",
+        description="Retrieve a single trade by its ID.",
+        responses={200: TradeSerializer, 404: dict},
+        tags=["Trades"],
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         return (
             Trade.objects
@@ -63,9 +117,16 @@ class TradeDetailView(generics.RetrieveAPIView):
         )
 
 
+
 class TradePnLView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary="Profit & Loss Summary",
+        description="Returns aggregated profit and loss statistics.",
+        responses={200: PnLSummarySerializer},
+        tags=["Trades"],
+    )
     def get(self, request):
         trades = Trade.objects.filter(trader=request.user)
 
@@ -82,28 +143,19 @@ class TradePnLView(APIView):
 
         by_asset = (
             trades.values("asset__symbol")
-            .annotate(
-                trades=Count("id"),
-                profit_loss=Sum("profit_loss"),
-            )
+            .annotate(trades=Count("id"), profit_loss=Sum("profit_loss"))
             .order_by("-profit_loss")
         )
 
         by_desk = (
             trades.values("desk__name")
-            .annotate(
-                trades=Count("id"),
-                profit_loss=Sum("profit_loss"),
-            )
+            .annotate(trades=Count("id"), profit_loss=Sum("profit_loss"))
             .order_by("-profit_loss")
         )
 
         by_date = (
             trades.values("trade_date__date")
-            .annotate(
-                trades=Count("id"),
-                profit_loss=Sum("profit_loss"),
-            )
+            .annotate(trades=Count("id"), profit_loss=Sum("profit_loss"))
             .order_by("trade_date__date")
         )
 
@@ -120,9 +172,16 @@ class TradePnLView(APIView):
         return Response(PnLSummarySerializer(payload).data)
 
 
+
 class TradeExportCSVView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary="Export Trades CSV",
+        description="Download all user trades as a CSV file.",
+        responses={200: None},
+        tags=["Trades"],
+    )
     def get(self, request):
         trades = (
             Trade.objects

@@ -46,8 +46,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = ["https://capstone-version-otcbook.onrender.com"]
-
+ALLOWED_HOSTS = [
+    "capstone-version-otcbook.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
 AUTH_USER_MODEL = "users.User"
 
 
@@ -73,6 +76,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "django_filters",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
 ]
 
 REST_FRAMEWORK = {
@@ -91,6 +96,13 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "user": "10/min",
     },
+     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "OTCBook API",
+    "DESCRIPTION": "API documentation for the OTCBook trading platform.",
+    "VERSION": "1.0.0",
 }
 
 

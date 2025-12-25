@@ -8,8 +8,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 
-
-
+from drf_spectacular.utils import extend_schema, OpenApiExample
 
 from .serializers import (
     SignupSerializer,
@@ -26,6 +25,24 @@ User = get_user_model()
 class SignupView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        summary="Register Desk Owner",
+        description="Create a new desk owner account and workspace.",
+        request=SignupSerializer,
+        responses={201: dict, 400: dict},
+        examples=[
+            OpenApiExample(
+                "Signup Example",
+                value={
+                    "name": "Cosmas Onyekwelu",
+                    "email": "owner@otcbook.com",
+                    "password": "StrongPassword123",
+                    "workspace": "AlphaDesks"
+                }
+            )
+        ],
+        tags=["Auth"],
+    )
     def post(self, request):
         serializer = SignupSerializer(data=request.data)
 
@@ -45,7 +62,7 @@ class SignupView(APIView):
                 "user": {
                     "id": user.id,
                     "email": user.email,
-                    "full_name": user.full_name,
+                    "name": user.full_name,
                     "role": user.role,
                     "plan": user.plan,
                     "desk": user.desk.name if user.desk else None,
@@ -61,6 +78,22 @@ class SignupView(APIView):
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        summary="Login User",
+        description="Authenticate user and return JWT access and refresh tokens.",
+        request=dict,
+        responses={200: dict, 400: dict, 403: dict},
+        examples=[
+            OpenApiExample(
+                "Login Example",
+                value={
+                    "email": "owner@otcbook.com",
+                    "password": "StrongPassword123"
+                }
+            )
+        ],
+        tags=["Auth"],
+    )
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
@@ -101,7 +134,7 @@ class LoginView(APIView):
                 "user": {
                     "id": user.id,
                     "email": user.email,
-                    "full_name": user.full_name,
+                    "name": user.full_name,
                     "role": user.role,
                     "plan": user.plan,
                     "desk": user.desk.name if user.desk else None,
@@ -112,8 +145,14 @@ class LoginView(APIView):
 
 
 # =====================================================
-# GET LOGGED-IN USER /users/me/
+# GET LOGGED-IN USER
 # =====================================================
+@extend_schema(
+    summary="Get Current User",
+    description="Retrieve profile details of the authenticated user.",
+    responses={200: dict},
+    tags=["Auth"],
+)
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def me(request):
@@ -133,7 +172,13 @@ def me(request):
 # =====================================================
 # KYC UPLOAD (Desk Owner Only)
 # =====================================================
-
+@extend_schema(
+    summary="Upload KYC",
+    description="Submit KYC documents for desk verification.",
+    request=KYCSerializer,
+    responses={200: dict, 400: dict, 403: dict},
+    tags=["Auth"],
+)
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
@@ -164,10 +209,26 @@ def upload_kyc(request):
     return Response(serializer.errors, status=400)
 
 
-
 # =====================================================
 # ADD TEAM MEMBER (Desk Owner Only)
 # =====================================================
+@extend_schema(
+    summary="Add Team Member",
+    description="Create a new team member under the desk.",
+    request=AddUserSerializer,
+    responses={200: dict, 400: dict, 403: dict},
+    examples=[
+        OpenApiExample(
+            "Add Team Member Example",
+            value={
+                "email": "trader1@otcbook.com",
+                "full_name": "Junior Trader",
+                "role": "trader"
+            }
+        )
+    ],
+    tags=["Auth"],
+)
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def add_team_member(request):
@@ -182,7 +243,10 @@ def add_team_member(request):
     serializer = AddUserSerializer(data=request.data)
 
     if serializer.is_valid():
-        new_user, temp_password = serializer.create(serializer.validated_data, user.desk)
+        new_user, temp_password = serializer.create(
+            serializer.validated_data,
+            user.desk
+        )
 
         return Response({
             "message": "Team member created successfully",

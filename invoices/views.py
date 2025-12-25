@@ -6,6 +6,8 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import requests
 
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
+
 from .models import Invoice
 from .serializers import InvoiceSerializer, InvoiceCreateSerializer
 from .services import InvoiceService
@@ -20,6 +22,30 @@ class InvoiceCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = InvoiceCreateSerializer
 
+    @extend_schema(
+        summary="Create Invoice from Trade",
+        description="Generate an invoice for a specific trade owned by the authenticated user.",
+        parameters=[
+            OpenApiParameter(
+                name="trade_id",
+                description="ID of the trade to generate invoice from",
+                required=True,
+                type=int,
+                location=OpenApiParameter.PATH,
+            )
+        ],
+        request=InvoiceCreateSerializer,
+        responses={201: InvoiceSerializer, 400: dict},
+        examples=[
+            OpenApiExample(
+                "Create Invoice",
+                value={
+                    "client_email": "client@example.com"
+                }
+            )
+        ],
+        tags=["Invoices"],
+    )
     def post(self, request, trade_id):
         trade = get_object_or_404(
             Trade,
@@ -49,12 +75,18 @@ class InvoiceListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = InvoiceSerializer
 
+    @extend_schema(
+        summary="List Invoices",
+        description="Retrieve all invoices created by the authenticated user.",
+        responses={200: InvoiceSerializer(many=True)},
+        tags=["Invoices"],
+    )
     def get_queryset(self):
         return Invoice.objects.filter(trader=self.request.user)
 
 
 # =====================================================
-# DOWNLOAD INVOICE PDF (CLOUDINARY)
+# DOWNLOAD INVOICE PDF
 # GET /invoice/<id>/download/
 # =====================================================
 class InvoiceDownloadView(generics.RetrieveAPIView):
@@ -62,6 +94,25 @@ class InvoiceDownloadView(generics.RetrieveAPIView):
     serializer_class = InvoiceSerializer
     queryset = Invoice.objects.all()
 
+    @extend_schema(
+        summary="Download Invoice PDF",
+        description="Download the generated invoice PDF file.",
+        parameters=[
+            OpenApiParameter(
+                name="id",
+                description="Invoice ID",
+                required=True,
+                type=int,
+                location=OpenApiParameter.PATH,
+            )
+        ],
+        responses={
+            200: {"description": "PDF file"},
+            403: dict,
+            404: dict,
+        },
+        tags=["Invoices"],
+    )
     def get(self, request, *args, **kwargs):
         invoice = self.get_object()
 
@@ -104,6 +155,25 @@ class InvoiceSendView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Invoice.objects.all()
 
+    @extend_schema(
+        summary="Send Invoice via Email",
+        description="Send the invoice PDF to the client email address.",
+        parameters=[
+            OpenApiParameter(
+                name="id",
+                description="Invoice ID",
+                required=True,
+                type=int,
+                location=OpenApiParameter.PATH,
+            )
+        ],
+        responses={
+            200: {"message": "Invoice sent successfully"},
+            400: dict,
+            502: dict,
+        },
+        tags=["Invoices"],
+    )
     def post(self, request, pk):
         invoice = get_object_or_404(
             Invoice,
