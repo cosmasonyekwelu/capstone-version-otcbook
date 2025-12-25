@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "gamification.apps.GamificationConfig",
     "invoices",
     "advisory",
+    "common",
 
 
     # Third-party apps

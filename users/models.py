@@ -3,12 +3,15 @@ from django.db import models
 from .managers import Manager
 
 
-
 class Desk(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
-    # Desk KYC details
-    id_card = models.ImageField(upload_to="kyc/", null=True, blank=True)
+    id_card_url = models.URLField(
+        null=True,
+        blank=True,
+        help_text="Private Cloudinary URL for uploaded ID document",
+    )
+
     kyc_status = models.CharField(
         max_length=20,
         choices=[
@@ -59,7 +62,7 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="members"
+        related_name="members",
     )
 
     is_banned = models.BooleanField(default=False)

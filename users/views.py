@@ -2,10 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
+
+
+
 
 from .serializers import (
     SignupSerializer,
@@ -129,24 +133,36 @@ def me(request):
 # =====================================================
 # KYC UPLOAD (Desk Owner Only)
 # =====================================================
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
 def upload_kyc(request):
     user = request.user
 
     if user.role != "desk_owner":
-        return Response({"message": "Only desk owners can submit KYC."}, status=403)
+        return Response(
+            {"message": "Only desk owners can submit KYC."},
+            status=403,
+        )
 
     if not user.desk:
-        return Response({"message": "Desk not found."}, status=404)
+        return Response(
+            {"message": "Desk not found."},
+            status=404,
+        )
 
     serializer = KYCSerializer(data=request.data)
 
     if serializer.is_valid():
         serializer.save(user.desk)
-        return Response({"message": "KYC submitted successfully."}, status=200)
+        return Response(
+            {"message": "KYC submitted successfully."},
+            status=200,
+        )
 
     return Response(serializer.errors, status=400)
+
 
 
 # =====================================================
