@@ -46,7 +46,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://capstone-version-otcbook.onrender.com"]
 
 AUTH_USER_MODEL = "users.User"
 
