@@ -49,7 +49,7 @@ class User(AbstractUser):
         ("enterprise", "Enterprise Plan"),
     )
 
-    # Remove username field
+   
     username = None
     email = models.EmailField(unique=True)
 
