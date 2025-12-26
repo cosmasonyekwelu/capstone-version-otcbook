@@ -19,9 +19,8 @@ from .serializers import (
 User = get_user_model()
 
 
-# =====================================================
-# SIGNUP (Register Desk Owner)
-# =====================================================
+
+
 class SignupView(APIView):
     permission_classes = [AllowAny]
 
@@ -72,9 +71,6 @@ class SignupView(APIView):
         )
 
 
-# =====================================================
-# LOGIN VIEW
-# =====================================================
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -144,9 +140,7 @@ class LoginView(APIView):
         )
 
 
-# =====================================================
-# GET LOGGED-IN USER
-# =====================================================
+
 @extend_schema(
     summary="Get Current User",
     description="Retrieve profile details of the authenticated user.",
@@ -169,9 +163,7 @@ def me(request):
     })
 
 
-# =====================================================
-# KYC UPLOAD (Desk Owner Only)
-# =====================================================
+
 @extend_schema(
     summary="Upload KYC",
     description="Submit KYC documents for desk verification.",
@@ -209,9 +201,8 @@ def upload_kyc(request):
     return Response(serializer.errors, status=400)
 
 
-# =====================================================
-# ADD TEAM MEMBER (Desk Owner Only)
-# =====================================================
+
+
 @extend_schema(
     summary="Add Team Member",
     description="Create a new team member under the desk.",
