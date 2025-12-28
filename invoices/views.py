@@ -13,11 +13,6 @@ from .serializers import InvoiceSerializer, InvoiceCreateSerializer
 from .services import InvoiceService
 from trades.models import Trade
 
-
-# =====================================================
-# CREATE INVOICE FROM TRADE
-# POST /invoice/create/<trade_id>/
-# =====================================================
 class InvoiceCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = InvoiceCreateSerializer
@@ -67,10 +62,6 @@ class InvoiceCreateView(generics.CreateAPIView):
         )
 
 
-# =====================================================
-# LIST USER INVOICES
-# GET /invoice/list/
-# =====================================================
 class InvoiceListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = InvoiceSerializer
@@ -85,10 +76,7 @@ class InvoiceListView(generics.ListAPIView):
         return Invoice.objects.filter(trader=self.request.user)
 
 
-# =====================================================
-# DOWNLOAD INVOICE PDF
-# GET /invoice/<id>/download/
-# =====================================================
+
 class InvoiceDownloadView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = InvoiceSerializer
@@ -147,10 +135,7 @@ class InvoiceDownloadView(generics.RetrieveAPIView):
         return response
 
 
-# =====================================================
-# SEND INVOICE TO CLIENT EMAIL
-# POST /invoice/<id>/send/
-# =====================================================
+
 class InvoiceSendView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Invoice.objects.all()

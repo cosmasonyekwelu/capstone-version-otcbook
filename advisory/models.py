@@ -40,9 +40,6 @@ class OPWeightedScore(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-# =====================================================
-# NEW – REQUIRED FOR RISK REPORT EXPORT
-# =====================================================
 class RiskReport(models.Model):
     STATUS_CHOICES = [
         ("pending", "Pending"),

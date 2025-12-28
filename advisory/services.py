@@ -13,9 +13,6 @@ from gamification.models import OPHistory
 client = Groq(api_key=settings.GROQ_API_KEY)
 
 
-# =====================================================
-# EXISTING – DO NOT TOUCH
-# =====================================================
 class AdvisoryAIService:
     SYSTEM_PROMPT = """
 You are a financial education assistant.
@@ -38,9 +35,7 @@ Always include a disclaimer.
         return completion.choices[0].message.content
 
 
-# =====================================================
-# NEW – RISK REPORT SERVICE
-# =====================================================
+
 class RiskReportService:
     @staticmethod
     def generate(user):
