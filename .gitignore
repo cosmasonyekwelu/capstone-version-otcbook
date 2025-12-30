@@ -29,6 +29,7 @@ logs/
 staticfiles/
 media/
 media/*
+privatedocs/
 
 # Ignore KYC uploads 
 media/kyc/
