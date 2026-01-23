@@ -15,7 +15,6 @@ import cloudinary
 from pathlib import Path
 from datetime import timedelta
 import os
-import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -33,7 +32,8 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 AI_ADVISORY_ENABLED = os.getenv("AI_ADVISORY_ENABLED", "false") == "true"
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG") == "True"
+
+DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -97,7 +97,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "user": "10/min",
     },
-     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SPECTACULAR_SETTINGS = {
@@ -105,7 +105,6 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API documentation for the OTCBook trading platform.",
     "VERSION": "1.0.0",
 }
-
 
 
 SIMPLE_JWT = {
@@ -149,12 +148,12 @@ WSGI_APPLICATION = "otcbook_server.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
 }
+
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 

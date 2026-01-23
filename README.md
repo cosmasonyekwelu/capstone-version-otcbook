@@ -170,12 +170,12 @@ Endpoints:
 | Category          | Technology                |
 | ----------------- | ------------------------- |
 | Backend Framework | Django, DRF               |
-| Database          | PostgreSQL                |
+| Database          | PostgreSQL/sqlite3 for dev|
 | Authentication    | JWT (SimpleJWT)           |
-| File Storage      | Local or S3               |
+| File Storage      | Cloudinary                |
 | Background Jobs   | Celery + Redis (optional) |
 | PDF Engine        | ReportLab                 |
-| AI                | GROK API                  |
+| AI                | GROQ API                  |
 | Documentation     | Swagger / Redoc           |
 |                   |                           |
 
@@ -306,3 +306,108 @@ Response includes:
 Using Django Admin
 
 ---
+
+```
+capstone-version-otcbook
+├─ advisory
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ migrations
+│  │  ├─ 0001_initial.py
+│  │  ├─ 0002_alter_tradeinsight_options_riskreport.py
+│  │  ├─ 0003_alter_riskreport_ai_summary_and_more.py
+│  │  └─ __init__.py
+│  ├─ models.py
+│  ├─ services.py
+│  ├─ tests.py
+│  ├─ urls.py
+│  ├─ views.py
+│  └─ __init__.py
+├─ common
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ migrations
+│  │  └─ __init__.py
+│  ├─ models.py
+│  ├─ storage
+│  │  ├─ cloudinary.py
+│  │  └─ __init__.py
+│  ├─ tests.py
+│  ├─ views.py
+│  └─ __init__.py
+├─ full_api.json
+├─ gamification
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ migrations
+│  │  ├─ 0001_initial.py
+│  │  ├─ 0002_badge_description_badge_is_active_badge_min_points_and_more.py
+│  │  └─ __init__.py
+│  ├─ models.py
+│  ├─ serializers.py
+│  ├─ services.py
+│  ├─ signals.py
+│  ├─ tests.py
+│  ├─ urls.py
+│  ├─ views.py
+│  └─ __init__.py
+├─ invoices
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ migrations
+│  │  ├─ 0001_initial.py
+│  │  ├─ 0002_alter_invoice_issued_at_alter_invoice_pdf_url_and_more.py
+│  │  └─ __init__.py
+│  ├─ models.py
+│  ├─ serializers.py
+│  ├─ services.py
+│  ├─ tests.py
+│  ├─ urls.py
+│  ├─ views.py
+│  └─ __init__.py
+├─ manage.py
+├─ otcbook-trades.postman_collection.json
+├─ otcbook_server
+│  ├─ asgi.py
+│  ├─ common
+│  ├─ settings.py
+│  ├─ urls.py
+│  ├─ wsgi.py
+│  └─ __init__.py
+├─ Procfile
+├─ README.md
+├─ requirements.txt
+├─ trades
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ filters.py
+│  ├─ migrations
+│  │  ├─ 0001_initial.py
+│  │  ├─ 0002_trade_trade_type_alter_asset_is_active_and_more.py
+│  │  ├─ 0003_alter_asset_is_active_alter_asset_is_custom_and_more.py
+│  │  ├─ 0004_alter_trade_desk_alter_asset_options_and_more.py
+│  │  └─ __init__.py
+│  ├─ models.py
+│  ├─ serializers.py
+│  ├─ tests.py
+│  ├─ urls.py
+│  ├─ views.py
+│  └─ __init__.py
+├─ updatedreq.txt
+└─ users
+   ├─ admin.py
+   ├─ apps.py
+   ├─ managers.py
+   ├─ migrations
+   │  ├─ 0001_initial.py
+   │  ├─ 0002_remove_desk_id_card_desk_id_card_url.py
+   │  ├─ 0003_desk_address.py
+   │  └─ __init__.py
+   ├─ models.py
+   ├─ serializers.py
+   ├─ tests.py
+   ├─ urls.py
+   ├─ views.py
+   └─ __init__.py
+
+```
